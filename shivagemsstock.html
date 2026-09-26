@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shivagems Diamond Stock</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#0b0c0f; --bg2:#101217; --card:#14161c; --card2:#181b22; --text:#eef0f3; --muted:#8a8f9c;
+  --gold:#c9a24b; --gold2:#e8c877; --border:#252832; --border2:#2f333f; --danger:#e0685f; --pos:#4caf7d;
+  --mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:radial-gradient(1200px 500px at 20% -10%, rgba(201,162,75,.07), transparent 60%),var(--bg);
+  color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;min-height:100vh;}
+header{position:sticky;top:0;padding:16px 22px;background:linear-gradient(180deg,var(--bg2) 0%,rgba(16,18,23,.92) 100%);
+  border-bottom:1px solid var(--border);z-index:20;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.brand{display:flex;align-items:baseline;gap:10px;}
+.brand .mark{width:9px;height:9px;background:linear-gradient(135deg,var(--gold2),var(--gold));border-radius:2px;transform:rotate(45deg);display:inline-block;}
+h1{font-family:'Cormorant Garamond',serif;font-size:1.55rem;margin:0;font-weight:700;letter-spacing:.5px;
+  background:linear-gradient(90deg,var(--gold2),var(--gold) 60%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.tag{font-size:.66rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-top:1px;}
+.status-pill{display:flex;align-items:center;gap:7px;font-size:.72rem;color:var(--muted);border:1px solid var(--border2);padding:6px 12px;border-radius:20px;background:var(--card);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--pos);box-shadow:0 0 6px var(--pos);}
+.wrap{max-width:1240px;margin:0 auto;padding:20px;}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.kpi{background:linear-gradient(155deg,var(--card2),var(--card));border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;}
+.kpi:before{content:"";position:absolute;top:0;left:0;width:2px;height:100%;background:linear-gradient(180deg,var(--gold2),var(--gold));}
+.kpi .num{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--gold);display:block;line-height:1.1;}
+.kpi .lbl{font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start;}
+@media (max-width:860px){ .layout{grid-template-columns:1fr;} }
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;}
+.card h2{font-family:'Cormorant Garamond',serif;font-size:1.15rem;margin:0 0 14px;color:var(--gold2);font-weight:700;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.grid{display:grid;grid-template-columns:1fr;gap:10px;}
+label{display:block;font-size:.66rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-size:.85rem;font-family:inherit;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);}
+textarea{resize:vertical;min-height:36px;}
+button{cursor:pointer;border:none;border-radius:6px;padding:10px 18px;font-size:.8rem;font-weight:600;letter-spacing:.4px;font-family:inherit;}
+.btn-primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1305;width:100%;text-transform:uppercase;letter-spacing:1px;font-size:.72rem;padding:11px;}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold2);}
+.btn-danger{background:transparent;border:1px solid var(--danger);color:var(--danger);}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px;}
+.tablewrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.tablehead{padding:16px 18px;border-bottom:1px solid var(--border);}
+.tablehead h2{margin:0;border:none;padding:0;font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--gold2);}
+.twrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.8rem;font-family:var(--mono);}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--border);white-space:nowrap;}
+th{color:var(--muted);font-weight:600;font-size:.63rem;text-transform:uppercase;letter-spacing:1px;background:var(--card2);font-family:'Inter',sans-serif;}
+tbody tr:hover{background:rgba(201,162,75,.06);}
+.thumb{width:32px;height:32px;object-fit:cover;border-radius:5px;border:1px solid var(--border2);background:var(--bg2);}
+.pill{display:inline-block;padding:2px 8px;border-radius:3px;background:rgba(201,162,75,.12);color:var(--gold2);font-size:.72rem;font-weight:600;border:1px solid rgba(201,162,75,.25);}
+.price{color:var(--pos);font-weight:600;}
+.actions button{padding:6px 12px;font-size:.7rem;margin-right:4px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(4,4,6,.7);z-index:50;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:22px;max-width:520px;width:100%;margin-top:40px;}
+.close{float:right;background:none;border:none;font-size:1.2rem;color:var(--muted);cursor:pointer;}
+.empty{color:var(--muted);text-align:center;padding:32px;font-size:.85rem;}
+.status{font-size:.74rem;color:var(--muted);margin-top:8px;}
+#gate{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;}
+#gate .box{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:30px;width:280px;text-align:center;}
+#gate input{text-align:center;letter-spacing:6px;font-size:1.3rem;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="box">
+    <h1 style="font-size:1.3rem;">SHIVAGEMS</h1>
+    <div class="status" style="margin-bottom:14px;">Enter office passcode</div>
+    <input type="password" id="pinInput" maxlength="8" placeholder="••••">
+    <button class="btn-primary" id="pinBtn" style="margin-top:10px;">Unlock</button>
+    <div class="status" id="pinStatus"></div>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+<header>
+  <div class="brand"><span class="mark"></span><div>
+    <h1>SHIVAGEMS</h1><div class="tag">Diamond Stock Register</div>
+  </div></div>
+  <div class="status-pill"><span class="dot"></span><span id="statusLine">Connecting…</span></div>
+</header>
+<div class="wrap">
+  <div class="kpis" id="summary"></div>
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2>Search</h2>
+        <div class="grid" id="filterGrid"></div>
+        <div class="row"><button class="btn-ghost" id="clearFiltersBtn" style="width:100%;">Clear filters</button></div>
+      </div>
+      <div class="card">
+        <h2>Add Stock</h2>
+        <div class="grid" id="formGrid"></div>
+        <div class="row" style="flex-direction:column;align-items:stretch;">
+          <div><label>Photo</label><input type="file" id="photoInput" accept="image/*"></div>
+          <button class="btn-primary" id="addBtn">Add to Stock</button>
+        </div>
+        <div class="status" id="addStatus"></div>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <div class="tablehead"><h2>Inventory</h2></div>
+      <div class="twrap"><table>
+        <thead><tr><th></th><th>Shape</th><th>Carat</th><th>Colour</th><th>Clarity</th><th>Cut</th>
+          <th>Qty</th><th>Cost/pc</th><th>Sell/pc</th><th>Cert #</th><th>Supplier</th><th></th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table></div>
+      <div class="empty" id="emptyMsg" style="display:none;">No diamonds match these filters.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <button class="close" id="modalClose">✕</button>
+    <h2 style="margin-top:0;color:var(--gold2);">Edit Stock Entry</h2>
+    <div class="grid" id="editGrid"></div>
+    <div class="row" style="flex-direction:column;align-items:stretch;">
+      <div><label>Replace Photo</label><input type="file" id="editPhotoInput" accept="image/*"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary" id="saveEditBtn" style="flex:1;">Save Changes</button>
+        <button class="btn-danger" id="deleteBtn">Delete</button>
+      </div>
+    </div>
+    <div class="status" id="editStatus"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="removeBg">
+  <div class="modal" style="max-width:380px;">
+    <button class="close" id="removeClose">✕</button>
+    <h2 style="margin-top:0;color:var(--gold2);">Remove Stock</h2>
+    <div class="status" id="removeInfo" style="margin-bottom:10px;"></div>
+    <label>Quantity to remove</label>
+    <input type="number" id="removeQty" min="1" step="1" value="1">
+    <div class="row"><button class="btn-danger" id="removeConfirmBtn" style="flex:1;">Remove</button></div>
+    <div class="status" id="removeStatus"></div>
+  </div>
+</div>
+
+<script type="module">
+// ====== EDIT THESE TWO THINGS BEFORE UPLOADING TO GITHUB ======
+const OFFICE_PIN = "1122"; // change this to your own office passcode
+const firebaseConfig = {
+  apiKey: "AIzaSyA7cA8x_Sc7Mhak95-DNV_dRQEpdyZy9KU",
+  authDomain: "shivs-gems-stock.firebaseapp.com",
+  projectId: "shivs-gems-stock",
+  storageBucket: "shivs-gems-stock.firebasestorage.app",
+  messagingSenderId: "212737172194",
+  appId: "1:212737172194:web:03c9501a45a6828672f4bb"
+};
+// ================================================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const fdb = getFirestore(app);
+const diamondsCol = collection(fdb, "diamonds");
+
+// ---- passcode gate ----
+const gate=document.getElementById("gate"), appEl=document.getElementById("app");
+if(localStorage.getItem("sg_unlocked")==="1"){ gate.style.display="none"; appEl.style.display="block"; boot(); }
+document.getElementById("pinBtn").onclick=tryUnlock;
+document.getElementById("pinInput").addEventListener("keydown",e=>{ if(e.key==="Enter") tryUnlock(); });
+function tryUnlock(){
+  const v=document.getElementById("pinInput").value;
+  if(v===OFFICE_PIN){
+    localStorage.setItem("sg_unlocked","1");
+    gate.style.display="none"; appEl.style.display="block"; boot();
+  } else { document.getElementById("pinStatus").textContent="Incorrect passcode."; }
+}
+
+// ---- fields / constants ----
+const SHAPES=["Round","Princess","Cushion","Emerald","Oval","Pear","Marquise","Radiant","Asscher","Heart"];
+const COLOURS=["D","E","F","G","H","I","J","K","L","M"];
+const CLARITY=["FL","IF","VVS1","VVS2","VS1","VS2","SI1","SI2","I1","I2","I3"];
+const CUTS=["Excellent","Very Good","Good","Fair","Poor"];
+const FIELDS=[
+  {k:"shape",label:"Shape",type:"select",opts:SHAPES},
+  {k:"carat",label:"Carat",type:"number",step:"0.01"},
+  {k:"colour",label:"Colour",type:"select",opts:COLOURS},
+  {k:"clarity",label:"Clarity",type:"select",opts:CLARITY},
+  {k:"cut",label:"Cut",type:"select",opts:CUTS},
+  {k:"quantity",label:"Quantity",type:"number",step:"1"},
+  {k:"costPrice",label:"Cost/pc (₹)",type:"number",step:"1"},
+  {k:"sellingPrice",label:"Selling/pc (₹)",type:"number",step:"1"},
+  {k:"certificateNumber",label:"Certificate #",type:"text"},
+  {k:"supplier",label:"Supplier",type:"text"},
+  {k:"remarks",label:"Remarks",type:"textarea"},
+];
+function buildFields(container,idPrefix){
+  container.innerHTML="";
+  FIELDS.forEach(f=>{
+    const wrap=document.createElement("div");
+    const lab=document.createElement("label"); lab.textContent=f.label;
+    let el;
+    if(f.type==="select"){ el=document.createElement("select");
+      el.innerHTML='<option value="">–</option>'+f.opts.map(o=>`<option value="${o}">${o}</option>`).join(""); }
+    else if(f.type==="textarea"){ el=document.createElement("textarea"); }
+    else { el=document.createElement("input"); el.type=f.type; if(f.step) el.step=f.step; }
+    el.id=idPrefix+"_"+f.k; wrap.appendChild(lab); wrap.appendChild(el); container.appendChild(wrap);
+  });
+}
+function readForm(prefix){
+  const d={};
+  FIELDS.forEach(f=>{ const el=document.getElementById(prefix+"_"+f.k); let v=el.value;
+    if(f.type==="number") v=v===""?null:parseFloat(v); d[f.k]=v; });
+  return d;
+}
+function clearForm(prefix){ FIELDS.forEach(f=>{ document.getElementById(prefix+"_"+f.k).value=""; }); }
+function fmtMoney(n){ return n==null||isNaN(n)?"–":"₹"+Number(n).toLocaleString("en-IN"); }
+function resizeImage(file){
+  return new Promise((res,rej)=>{
+    const img=new Image(); const reader=new FileReader();
+    reader.onload=e=>{ img.onload=()=>{
+      const scale=Math.min(1,300/img.width); const c=document.createElement("canvas");
+      c.width=img.width*scale; c.height=img.height*scale;
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      res(c.toDataURL("image/jpeg",0.6));
+    }; img.onerror=rej; img.src=e.target.result; };
+    reader.onerror=rej; reader.readAsDataURL(file);
+  });
+}
+function matchKey(a,b){
+  return a.shape===b.shape && a.colour===b.colour && a.clarity===b.clarity && a.cut===b.cut && Math.abs((a.carat||0)-(b.carat||0))<0.005;
+}
+
+let allDocs=[];
+function boot(){
+  buildFields(document.getElementById("formGrid"),"add");
+  buildFields(document.getElementById("editGrid"),"edit");
+  const filterGrid=document.getElementById("filterGrid");
+  filterGrid.innerHTML=`
+    <div><label>Shape</label><select id="f_shape"><option value="">All</option>${SHAPES.map(s=>`<option>${s}</option>`).join("")}</select></div>
+    <div><label>Colour</label><select id="f_colour"><option value="">All</option>${COLOURS.map(s=>`<option>${s}</option>`).join("")}</select></div>
+    <div><label>Clarity</label><select id="f_clarity"><option value="">All</option>${CLARITY.map(s=>`<option>${s}</option>`).join("")}</select></div>
+    <div><label>Cut</label><select id="f_cut"><option value="">All</option>${CUTS.map(s=>`<option>${s}</option>`).join("")}</select></div>
+    <div><label>Min Carat</label><input type="number" step="0.01" id="f_minCarat"></div>
+    <div><label>Max Carat</label><input type="number" step="0.01" id="f_maxCarat"></div>
+    <div><label>Certificate #</label><input type="text" id="f_cert"></div>
+    <div><label>Supplier</label><input type="text" id="f_supplier"></div>`;
+  ["f_shape","f_colour","f_clarity","f_cut","f_minCarat","f_maxCarat","f_cert","f_supplier"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",render);
+  });
+  document.getElementById("clearFiltersBtn").onclick=()=>{
+    ["f_shape","f_colour","f_clarity","f_cut","f_minCarat","f_maxCarat","f_cert","f_supplier"].forEach(id=>document.getElementById(id).value="");
+    render();
+  };
+
+  const statusLine=document.getElementById("statusLine");
+  onSnapshot(diamondsCol, snap=>{
+    allDocs=snap.docs.map(d=>({id:d.id,...d.data()}));
+    statusLine.textContent="Live — synced across everyone with this link";
+    render();
+  }, err=>{ statusLine.textContent="Sync error: "+err.message; });
+
+  document.getElementById("addBtn").onclick=async()=>{
+    const addStatus=document.getElementById("addStatus");
+    const data=readForm("add");
+    if(!data.shape||!data.colour||!data.clarity||!data.cut||!data.carat||!data.quantity){
+      addStatus.textContent="Please fill shape, carat, colour, clarity, cut and quantity."; return;
+    }
+    addStatus.textContent="Saving…";
+    let photoData=null;
+    const file=document.getElementById("photoInput").files[0];
+    if(file){ try{ photoData=await resizeImage(file); }catch(e){ addStatus.textContent="Photo failed, saving without it."; } }
+    const existing=allDocs.find(d=>matchKey(d,data));
+    try{
+      if(existing){
+        const newQty=(existing.quantity||0)+(data.quantity||0);
+        await updateDoc(doc(fdb,"diamonds",existing.id),{
+          quantity:newQty,
+          costPrice:data.costPrice ?? existing.costPrice,
+          sellingPrice:data.sellingPrice ?? existing.sellingPrice,
+          certificateNumber:data.certificateNumber || existing.certificateNumber,
+          supplier:data.supplier || existing.supplier,
+          remarks:data.remarks || existing.remarks,
+          ...(photoData?{photoData}:{}),
+          updatedAt:Date.now()
+        });
+        addStatus.textContent="Matched existing stock entry — quantity updated to "+newQty+".";
+      } else {
+        await addDoc(diamondsCol,{...data, photoData, updatedAt:Date.now()});
+        addStatus.textContent="New stock entry added.";
+      }
+      clearForm("add"); document.getElementById("photoInput").value="";
+    }catch(e){ addStatus.textContent="Save failed: "+e.message; }
+  };
+
+  let editingId=null;
+  window.openEdit=(d)=>{
+    editingId=d.id;
+    FIELDS.forEach(f=>{ document.getElementById("edit_"+f.k).value=d[f.k]??""; });
+    document.getElementById("editStatus").textContent="";
+    document.getElementById("editPhotoInput").value="";
+    document.getElementById("modalBg").classList.add("open");
+  };
+  document.getElementById("modalClose").onclick=()=>document.getElementById("modalBg").classList.remove("open");
+  document.getElementById("modalBg").addEventListener("click",e=>{ if(e.target.id==="modalBg") e.target.classList.remove("open"); });
+  document.getElementById("saveEditBtn").onclick=async()=>{
+    if(!editingId) return;
+    const editStatus=document.getElementById("editStatus");
+    editStatus.textContent="Saving…";
+    const data=readForm("edit");
+    let extra={};
+    const file=document.getElementById("editPhotoInput").files[0];
+    if(file){ try{ extra={photoData:await resizeImage(file)}; }catch(e){ editStatus.textContent="Photo failed."; } }
+    try{
+      await updateDoc(doc(fdb,"diamonds",editingId),{...data,...extra,updatedAt:Date.now()});
+      editStatus.textContent="Saved.";
+      setTimeout(()=>document.getElementById("modalBg").classList.remove("open"),400);
+    }catch(e){ editStatus.textContent="Save failed: "+e.message; }
+  };
+  document.getElementById("deleteBtn").onclick=async()=>{
+    if(!editingId) return;
+    try{ await deleteDoc(doc(fdb,"diamonds",editingId)); document.getElementById("modalBg").classList.remove("open"); }
+    catch(e){ document.getElementById("editStatus").textContent="Delete failed: "+e.message; }
+  };
+
+  let removingDoc=null;
+  window.removeStock=(d)=>{
+    removingDoc=d;
+    document.getElementById("removeInfo").textContent=`${d.shape||""} ${d.carat||""}ct ${d.colour||""} ${d.clarity||""} — currently ${d.quantity||0} in stock`;
+    document.getElementById("removeQty").max=d.quantity||0;
+    document.getElementById("removeQty").value=1;
+    document.getElementById("removeStatus").textContent="";
+    document.getElementById("removeBg").classList.add("open");
+  };
+  document.getElementById("removeClose").onclick=()=>document.getElementById("removeBg").classList.remove("open");
+  document.getElementById("removeBg").addEventListener("click",e=>{ if(e.target.id==="removeBg") e.target.classList.remove("open"); });
+  document.getElementById("removeConfirmBtn").onclick=async()=>{
+    if(!removingDoc) return;
+    const status=document.getElementById("removeStatus");
+    const qty=removingDoc.quantity||0;
+    const n=parseInt(document.getElementById("removeQty").value,10);
+    if(isNaN(n)||n<=0){ status.textContent="Enter a valid quantity."; return; }
+    status.textContent="Removing…";
+    try{
+      if(n>=qty){ await deleteDoc(doc(fdb,"diamonds",removingDoc.id)); }
+      else{ await updateDoc(doc(fdb,"diamonds",removingDoc.id),{quantity:qty-n,updatedAt:Date.now()}); }
+      document.getElementById("removeBg").classList.remove("open");
+    }catch(e){ status.textContent="Failed: "+e.message; }
+  };
+
+  render();
+}
+
+function render(){
+  const g=id=>document.getElementById(id)?.value;
+  const shape=g("f_shape"), colour=g("f_colour"), clarity=g("f_clarity"), cut=g("f_cut");
+  const minC=parseFloat(g("f_minCarat")), maxC=parseFloat(g("f_maxCarat"));
+  const cert=(g("f_cert")||"").toLowerCase(), supplier=(g("f_supplier")||"").toLowerCase();
+  let list=allDocs.filter(d=>{
+    if(shape && d.shape!==shape) return false;
+    if(colour && d.colour!==colour) return false;
+    if(clarity && d.clarity!==clarity) return false;
+    if(cut && d.cut!==cut) return false;
+    if(!isNaN(minC) && (d.carat||0)<minC) return false;
+    if(!isNaN(maxC) && (d.carat||0)>maxC) return false;
+    if(cert && !(d.certificateNumber||"").toLowerCase().includes(cert)) return false;
+    if(supplier && !(d.supplier||"").toLowerCase().includes(supplier)) return false;
+    return true;
+  });
+  list.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  const tbody=document.getElementById("tbody"); tbody.innerHTML="";
+  const emptyMsg=document.getElementById("emptyMsg");
+  if(emptyMsg) emptyMsg.style.display = list.length? "none":"block";
+  list.forEach(d=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${d.photoData?`<img class="thumb" src="${d.photoData}">`:""}</td>
+      <td>${d.shape||""}</td><td>${d.carat??""}</td>
+      <td><span class="pill">${d.colour||""}</span></td><td><span class="pill">${d.clarity||""}</span></td>
+      <td>${d.cut||""}</td><td>${d.quantity??""}</td>
+      <td class="price">${fmtMoney(d.costPrice)}</td><td class="price">${fmtMoney(d.sellingPrice)}</td>
+      <td>${d.certificateNumber||""}</td><td>${d.supplier||""}</td>
+      <td class="actions"><button class="btn-ghost editBtn">Edit</button><button class="btn-danger removeBtn">Remove</button></td>`;
+    tr.querySelector(".editBtn").onclick=()=>window.openEdit(d);
+    tr.querySelector(".removeBtn").onclick=()=>window.removeStock(d);
+    tbody.appendChild(tr);
+  });
+  const totalPcs=list.reduce((s,d)=>s+(d.quantity||0),0);
+  const totalCost=list.reduce((s,d)=>s+(d.quantity||0)*(d.costPrice||0),0);
+  const totalSell=list.reduce((s,d)=>s+(d.quantity||0)*(d.sellingPrice||0),0);
+  const summary=document.getElementById("summary");
+  if(summary) summary.innerHTML=`
+    <div class="kpi"><span class="num">${list.length}</span><div class="lbl">Entries Shown</div></div>
+    <div class="kpi"><span class="num">${totalPcs}</span><div class="lbl">Total Pieces</div></div>
+    <div class="kpi"><span class="num">${fmtMoney(totalCost)}</span><div class="lbl">Total Cost Value</div></div>
+    <div class="kpi"><span class="num">${fmtMoney(totalSell)}</span><div class="lbl">Total Selling Value</div></div>`;
+}
+</script>
+</body>
+</html>
