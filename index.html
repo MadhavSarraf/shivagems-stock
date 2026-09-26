@@ -65,6 +65,21 @@ tbody tr:hover{background:rgba(201,162,75,.06);}
 #gate{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;}
 #gate .box{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:30px;width:280px;text-align:center;}
 #gate input{text-align:center;letter-spacing:6px;font-size:1.3rem;}
+@media (max-width:700px){
+  .twrap{overflow-x:visible;}
+  table,thead,tbody,th,tr,td{display:block;}
+  thead{position:absolute;top:-9999px;left:-9999px;}
+  tbody{padding:10px;}
+  tr{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;padding:6px 10px;background:var(--card2);}
+  td{border:none;border-bottom:1px solid var(--border);padding:8px 4px 8px 42%;position:relative;text-align:right;white-space:normal;}
+  td:last-child{border-bottom:none;}
+  td:empty{display:none;}
+  td:before{content:attr(data-label);position:absolute;left:0;width:40%;padding-right:8px;font-size:.62rem;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:left;font-family:'Inter',sans-serif;}
+  td.actions{text-align:left;padding-left:4px;display:flex;gap:6px;}
+  td.actions:before{content:none;}
+  td:first-child{text-align:left;padding-left:4px;}
+  td:first-child:before{content:none;}
+}
 </style>
 </head>
 <body>
@@ -73,7 +88,7 @@ tbody tr:hover{background:rgba(201,162,75,.06);}
   <div class="box">
     <h1 style="font-size:1.3rem;">SHIVAGEMS</h1>
     <div class="status" style="margin-bottom:14px;">Enter office passcode</div>
-    <input type="password" id="pinInput" maxlength="8" placeholder="••••">
+    <input type="password" id="pinInput" maxlength="8" inputmode="numeric" pattern="[0-9]*" placeholder="••••">
     <button class="btn-primary" id="pinBtn" style="margin-top:10px;">Unlock</button>
     <div class="status" id="pinStatus"></div>
   </div>
@@ -140,7 +155,7 @@ tbody tr:hover{background:rgba(201,162,75,.06);}
     <h2 style="margin-top:0;color:var(--gold2);">Remove Stock</h2>
     <div class="status" id="removeInfo" style="margin-bottom:10px;"></div>
     <label>Quantity to remove</label>
-    <input type="number" id="removeQty" min="1" step="1" value="1">
+    <input type="number" id="removeQty" min="1" step="1" inputmode="numeric" value="1">
     <div class="row"><button class="btn-danger" id="removeConfirmBtn" style="flex:1;">Remove</button></div>
     <div class="status" id="removeStatus"></div>
   </div>
@@ -187,13 +202,13 @@ const CLARITY=["FL","IF","VVS1","VVS2","VS1","VS2","SI1","SI2","I1","I2","I3"];
 const CUTS=["Excellent","Very Good","Good","Fair","Poor"];
 const FIELDS=[
   {k:"shape",label:"Shape",type:"select",opts:SHAPES},
-  {k:"carat",label:"Carat",type:"number",step:"0.01"},
+  {k:"carat",label:"Carat",type:"number",step:"0.01",inputmode:"decimal"},
   {k:"colour",label:"Colour",type:"select",opts:COLOURS},
   {k:"clarity",label:"Clarity",type:"select",opts:CLARITY},
   {k:"cut",label:"Cut",type:"select",opts:CUTS},
-  {k:"quantity",label:"Quantity",type:"number",step:"1"},
-  {k:"costPrice",label:"Cost/pc (₹)",type:"number",step:"1"},
-  {k:"sellingPrice",label:"Selling/pc (₹)",type:"number",step:"1"},
+  {k:"quantity",label:"Quantity",type:"number",step:"1",inputmode:"numeric"},
+  {k:"costPrice",label:"Cost/pc (₹)",type:"number",step:"1",inputmode:"decimal"},
+  {k:"sellingPrice",label:"Selling/pc (₹)",type:"number",step:"1",inputmode:"decimal"},
   {k:"certificateNumber",label:"Certificate #",type:"text"},
   {k:"supplier",label:"Supplier",type:"text"},
   {k:"remarks",label:"Remarks",type:"textarea"},
@@ -207,7 +222,7 @@ function buildFields(container,idPrefix){
     if(f.type==="select"){ el=document.createElement("select");
       el.innerHTML='<option value="">–</option>'+f.opts.map(o=>`<option value="${o}">${o}</option>`).join(""); }
     else if(f.type==="textarea"){ el=document.createElement("textarea"); }
-    else { el=document.createElement("input"); el.type=f.type; if(f.step) el.step=f.step; }
+    else { el=document.createElement("input"); el.type=f.type; if(f.step) el.step=f.step; if(f.inputmode) el.inputMode=f.inputmode; }
     el.id=idPrefix+"_"+f.k; wrap.appendChild(lab); wrap.appendChild(el); container.appendChild(wrap);
   });
 }
@@ -245,8 +260,8 @@ function boot(){
     <div><label>Colour</label><select id="f_colour"><option value="">All</option>${COLOURS.map(s=>`<option>${s}</option>`).join("")}</select></div>
     <div><label>Clarity</label><select id="f_clarity"><option value="">All</option>${CLARITY.map(s=>`<option>${s}</option>`).join("")}</select></div>
     <div><label>Cut</label><select id="f_cut"><option value="">All</option>${CUTS.map(s=>`<option>${s}</option>`).join("")}</select></div>
-    <div><label>Min Carat</label><input type="number" step="0.01" id="f_minCarat"></div>
-    <div><label>Max Carat</label><input type="number" step="0.01" id="f_maxCarat"></div>
+    <div><label>Min Carat</label><input type="number" step="0.01" inputmode="decimal" id="f_minCarat"></div>
+    <div><label>Max Carat</label><input type="number" step="0.01" inputmode="decimal" id="f_maxCarat"></div>
     <div><label>Certificate #</label><input type="text" id="f_cert"></div>
     <div><label>Supplier</label><input type="text" id="f_supplier"></div>`;
   ["f_shape","f_colour","f_clarity","f_cut","f_minCarat","f_maxCarat","f_cert","f_supplier"].forEach(id=>{
@@ -379,11 +394,11 @@ function render(){
     const tr=document.createElement("tr");
     tr.innerHTML=`
       <td>${d.photoData?`<img class="thumb" src="${d.photoData}">`:""}</td>
-      <td>${d.shape||""}</td><td>${d.carat??""}</td>
-      <td><span class="pill">${d.colour||""}</span></td><td><span class="pill">${d.clarity||""}</span></td>
-      <td>${d.cut||""}</td><td>${d.quantity??""}</td>
-      <td class="price">${fmtMoney(d.costPrice)}</td><td class="price">${fmtMoney(d.sellingPrice)}</td>
-      <td>${d.certificateNumber||""}</td><td>${d.supplier||""}</td>
+      <td data-label="Shape">${d.shape||""}</td><td data-label="Carat">${d.carat??""}</td>
+      <td data-label="Colour"><span class="pill">${d.colour||""}</span></td><td data-label="Clarity"><span class="pill">${d.clarity||""}</span></td>
+      <td data-label="Cut">${d.cut||""}</td><td data-label="Qty">${d.quantity??""}</td>
+      <td data-label="Cost/pc" class="price">${fmtMoney(d.costPrice)}</td><td data-label="Sell/pc" class="price">${fmtMoney(d.sellingPrice)}</td>
+      <td data-label="Cert #">${d.certificateNumber||""}</td><td data-label="Supplier">${d.supplier||""}</td>
       <td class="actions"><button class="btn-ghost editBtn">Edit</button><button class="btn-danger removeBtn">Remove</button></td>`;
     tr.querySelector(".editBtn").onclick=()=>window.openEdit(d);
     tr.querySelector(".removeBtn").onclick=()=>window.removeStock(d);
