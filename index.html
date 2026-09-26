@@ -65,6 +65,21 @@ tbody tr:hover{background:rgba(201,162,75,.06);}
 #gate{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;}
 #gate .box{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:30px;width:280px;text-align:center;}
 #gate input{text-align:center;letter-spacing:6px;font-size:1.3rem;}
+@media (max-width:700px){
+  .twrap{overflow-x:visible;}
+  table,thead,tbody,th,tr,td{display:block;}
+  thead{position:absolute;top:-9999px;left:-9999px;}
+  tbody{padding:10px;}
+  tr{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;padding:6px 10px;background:var(--card2);}
+  td{border:none;border-bottom:1px solid var(--border);padding:8px 4px 8px 42%;position:relative;text-align:right;white-space:normal;}
+  td:last-child{border-bottom:none;}
+  td:empty{display:none;}
+  td:before{content:attr(data-label);position:absolute;left:0;width:40%;padding-right:8px;font-size:.62rem;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:left;font-family:'Inter',sans-serif;}
+  td.actions{text-align:left;padding-left:4px;display:flex;gap:6px;}
+  td.actions:before{content:none;}
+  td:first-child{text-align:left;padding-left:4px;}
+  td:first-child:before{content:none;}
+}
 </style>
 </head>
 <body>
@@ -179,7 +194,6 @@ const diamondsCol = collection(fdb, "diamonds");
 
 // ---- passcode gate ----
 const gate=document.getElementById("gate"), appEl=document.getElementById("app");
-if(localStorage.getItem("sg_unlocked")==="1"){ gate.style.display="none"; appEl.style.display="block"; boot(); }
 document.getElementById("pinBtn").onclick=tryUnlock;
 document.getElementById("pinInput").addEventListener("keydown",e=>{ if(e.key==="Enter") tryUnlock(); });
 function tryUnlock(){
@@ -389,11 +403,11 @@ function render(){
     const tr=document.createElement("tr");
     tr.innerHTML=`
       <td>${d.photoData?`<img class="thumb" src="${d.photoData}">`:""}</td>
-      <td>${d.shape||""}</td><td>${d.carat??""}</td>
-      <td><span class="pill">${d.colour||""}</span></td><td><span class="pill">${d.clarity||""}</span></td>
-      <td>${d.cut||""}</td><td>${d.quantity??""}</td>
-      <td class="price">${fmtMoney(d.costPrice)}</td><td class="price">${fmtMoney(d.sellingPrice)}</td>
-      <td>${d.certificateNumber||""}</td><td>${d.supplier||""}</td>
+      <td data-label="Shape">${d.shape||""}</td><td data-label="Carat">${d.carat??""}</td>
+      <td data-label="Colour"><span class="pill">${d.colour||""}</span></td><td data-label="Clarity"><span class="pill">${d.clarity||""}</span></td>
+      <td data-label="Cut">${d.cut||""}</td><td data-label="Qty">${d.quantity??""}</td>
+      <td data-label="Cost/pc" class="price">${fmtMoney(d.costPrice)}</td><td data-label="Sell/pc" class="price">${fmtMoney(d.sellingPrice)}</td>
+      <td data-label="Cert #">${d.certificateNumber||""}</td><td data-label="Supplier">${d.supplier||""}</td>
       <td class="actions"><button class="btn-ghost editBtn">Edit</button><button class="btn-danger removeBtn">Remove</button></td>`;
     tr.querySelector(".editBtn").onclick=()=>window.openEdit(d);
     tr.querySelector(".removeBtn").onclick=()=>window.removeStock(d);
@@ -409,6 +423,9 @@ function render(){
     <div class="kpi"><span class="num">${fmtMoney(totalCost)}</span><div class="lbl">Total Cost Value</div></div>
     <div class="kpi"><span class="num">${fmtMoney(totalSell)}</span><div class="lbl">Total Selling Value</div></div>`;
 }
+
+// Now that FIELDS, buildFields, and boot are all defined, it's safe to auto-skip the gate.
+if(localStorage.getItem("sg_unlocked")==="1"){ gate.style.display="none"; appEl.style.display="block"; boot(); }
 </script>
 </body>
 </html>
